@@ -1,9 +1,69 @@
 package com.company;
-
+import java.io.*;
 import java.lang.reflect.Array;
-import java.util.Arrays;
+//import java.util.Arrays;
+import java.util.*;
+import java.util.regex.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
+    public static LinkedHashMap<String, Integer> sortHashMapByValues(HashMap<String, Integer> passedMap) {
+        List<String> mapKeys = new ArrayList<>(passedMap.keySet());
+        List<Integer> mapValues = new ArrayList<>(passedMap.values());
+        Collections.sort(mapValues, Collections.reverseOrder());
+        Collections.sort(mapKeys, Collections.reverseOrder());
+        LinkedHashMap<String, Integer> sortedMap = new LinkedHashMap<>();
+        Iterator<Integer> valueIt = mapValues.iterator();
+        while (valueIt.hasNext()) {
+            Integer val = valueIt.next();
+            Iterator<String> keyIt = mapKeys.iterator();
+            while (keyIt.hasNext()) {
+                String key = keyIt.next();
+                Integer comp1 = passedMap.get(key);
+                Integer comp2 = val;
+                if (comp1.equals(comp2)) {
+                    keyIt.remove();
+                    sortedMap.put(key, val);
+                    break;
+                }
+            }
+        }
+        return sortedMap;
+    }
+
+    public static void harry() throws Exception {
+        File file = new File("harry.txt");
+        BufferedReader br  = new BufferedReader(new FileReader(file));
+        String st;
+        String harryText = "";
+        while ((st = br.readLine()) != null) harryText += st;
+
+        List<String> allMatches = new ArrayList<String>();
+        Matcher m = Pattern.compile("\\s[a-zA-Z]{3,}\\s").matcher(harryText);
+        while (m.find()) allMatches.add(m.group());
+
+        HashMap<String, Integer> words = new HashMap<>();
+        String currentWord;
+        Integer currentWordCount;
+        for (int i = 0; i < allMatches.size(); i++) {
+            currentWord = allMatches.get(i);
+            if (words.get(currentWord) == null) {
+                words.put(currentWord, 1);
+            } else {
+                currentWordCount = words.get(currentWord);
+                words.put(currentWord, ++currentWordCount);
+            }
+        }
+        List<Map.Entry<String, Integer>> wordsSortedTop20
+                = sortHashMapByValues(words).entrySet().stream().limit(20).collect(Collectors.toList());
+        System.out.println(wordsSortedTop20);
+        BufferedWriter writer = new BufferedWriter(new FileWriter("test.txt"));
+        writer.append("A fine header for the file\n\r");
+        writer.append(wordsSortedTop20.toString());
+        writer.close();
+
+    }
     public static int[] rightShift(int[] array, int step) {
         for (int s = 0; s < step; s++) {
             int temp = array[array.length-1];
@@ -71,5 +131,13 @@ public class Main {
         System.out.println(prefix(arrayTask4_1));  // ab
         String[] arrayTask4_2 = {"abc", "abcd", "abce", "abcac"} ;
         System.out.println(prefix(arrayTask4_2)); // abc
+        System.out.println("-----------------------------------------------");
+
+        System.out.println("Task 1.");
+        try {
+            harry();
+        } catch(Exception e) {
+
+        }
     }
 }
